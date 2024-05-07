@@ -10,7 +10,49 @@ header {
     padding: 10px;
     text-align: center;
 }
+.container {
+    max-width: 1200px;
+    margin: 0 auto;
+}
 
+.weather-card {
+    background-color: #fff;
+    border-radius: 8px;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+    padding: 20px;
+    margin-bottom: 20px;
+}
+
+.weather-card h2 {
+    font-size: 24px;
+    margin-bottom: 10px;
+}
+
+.weather-card p {
+    font-size: 16px;
+    margin-bottom: 8px;
+}
+
+.forecast-container {
+    display: flex;
+    justify-content: space-between;
+    margin-top: 20px;
+}
+
+.forecast-item {
+    flex-basis: calc(20% - 10px); /* Adjust width to fit 5 items in a row */
+    background-color: #fff;
+    border-radius: 8px;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+    padding: 10px;
+    margin-right: 10px;
+}
+
+@media (max-width: 768px) {
+    .forecast-item {
+        flex-basis: calc(33.33% - 10px); /* Adjust width for smaller screens */
+    }
+}
 main {
     display: flex;
     flex-wrap: wrap;
