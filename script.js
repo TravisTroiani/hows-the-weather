@@ -5,6 +5,19 @@ const currentWeatherDiv = document.getElementById('current-weather');
 const forecastDiv = document.getElementById('forecast');
 const searchHistoryDiv = document.getElementById('search-history');
 
+async function fetchWeather(cityName) {
+    const apiKey = "d84a44f96fff68524d2248d02c76f4d8";
+    const apiUrl = `https://api.openweathermap.org/data/2.5/weather?q=${cityName}&appid=${apiKey}`;
+
+    try {
+        const response = await fetch(apiUrl);
+        const data = await response.json();
+        return data;
+    } catch (error) {
+        console.error("Error fetching weather data:", error);
+        return null;
+    }
+}
 form.addEventListener('submit', async function(event) {
     event.preventDefault();
     const cityName = cityInput.value.trim();
@@ -12,23 +25,23 @@ form.addEventListener('submit', async function(event) {
         alert('Please enter a city name.');
         return;
     }
-
+    
     try {
         const apiKey = "d84a44f96fff68524d2248d02c76f4d8";
         const currentWeatherUrl = `https://api.openweathermap.org/data/2.5/weather?q=${cityName}&appid=${apiKey}`;
-        const forecastUrl = `https://api.openweathermap.org/data/2.5/forecast?q=${cityName}&appid=${apiKey}`;
+        // const forecastUrl = `https://api.openweathermap.org/data/2.5/forecast?q=${cityName}&appid=${apiKey}`;
         
         const currentWeatherResponse = await fetch(currentWeatherUrl);
-        const forecastResponse = await fetch(forecastUrl);
-
+        // const forecastResponse = await fetch(forecastUrl);
+        
         if (!currentWeatherResponse.ok || !forecastResponse.ok) {
             throw new Error('Weather data not available.');
         }
-
+        
         const currentWeatherData = await currentWeatherResponse.json();
-        const forecastData = await forecastResponse.json();
+        // const forecastData = await forecastResponse.json();
         displayWeather(currentWeatherData);
-        displayForecast(forecastData);
+        // displayForecast(forecastData);
     } catch (error) {
         console.error(error);
         alert('Error fetching weather data.');
@@ -52,45 +65,74 @@ function displayWeather(data) {
     currentWeatherDiv.innerHTML = weatherHTML;
 }
 
+// function displayForecast(data) {
+//     forecastDiv.innerHTML = ""; // Clear previous content
+
+//     const forecastItems = data.list.slice(0,5); // Display the first 5 forecast items
+
+//     forecastItems.forEach(item => {
+//         const date = new Date(item.dt * 1000); // Convert UNIX timestamp to Date object
+//         date.setDate(date.getDate() + 1); // Add one day
+
+//         const temperature = item.main.temp;
+//         const description = item.weather[0].description;
+//         const humidity = item.main.humidity;
+//         const windSpeed = item.wind.speed;
+
+//         const forecastHTML = `
+//             <div class="forecast-item">
+//                 <p>Date: ${date.toDateString()}</p>
+//                 <p>Temperature: ${temperature} K</p>
+//                 <p>Description: ${description}</p>
+//                 <p>Humidity: ${humidity}%</p>
+//                 <p>Wind Speed: ${windSpeed} m/s</p>
+//             </div>
+//         `;
+//         forecastDiv.insertAdjacentHTML('beforeend', forecastHTML);
+//     });
+// }
 function displayForecast(data) {
     forecastDiv.innerHTML = ""; // Clear previous content
 
-    const forecastItems = data.list.slice(0,5); // Display the first 5 forecast items
+    const forecastItems = data.list.slice(0, 5); // Display the first 5 forecast items
 
-    forecastItems.forEach(item => {
-        const date = new Date(item.dt * 1000); // Convert UNIX timestamp to Date object
-        const temperature = item.main.temp;
-        const description = item.weather[0].description;
-        const humidity = item.main.humidity;
-        const windSpeed = item.wind.speed;
+    // Start with the current date
+    const currentDate = new Date();
+    
+    // Loop through the next 5 days
+    for (let i = 0; i < 5; i++) {
+        const date = new Date(currentDate);
+        date.setDate(date.getDate() + i); // Add one day to the current date
 
-        const forecastHTML = `
-            <div class="forecast-item">
-                <p>Date: ${date.toDateString()}</p>
-                <p>Temperature: ${temperature} K</p>
-                <p>Description: ${description}</p>
-                <p>Humidity: ${humidity}%</p>
-                <p>Wind Speed: ${windSpeed} m/s</p>
-            </div>
-        `;
-        forecastDiv.insertAdjacentHTML('beforeend', forecastHTML);
-    });
+        // Find the forecast item corresponding to this date
+        const forecastItem = forecastItems.find(item => {
+            const itemDate = new Date(item.dt * 1000);
+            //  date.setDate(date.getDate() + 1); // Add one day
+
+            return itemDate.getDate() !== date.getDate();
+        });
+
+        if (forecastItem) {
+            const temperature = forecastItem.main.temp;
+            const description = forecastItem.weather[0].description;
+            const humidity = forecastItem.main.humidity;
+            const windSpeed = forecastItem.wind.speed;
+
+            const forecastHTML = `
+                <div class="forecast-item">
+                    <p>Date: ${date.toDateString()}</p>
+                    <p>Temperature: ${temperature} K</p>
+                    <p>Description: ${description}</p>
+                    <p>Humidity: ${humidity}%</p>
+                    <p>Wind Speed: ${windSpeed} m/s</p>
+                </div>
+            `;
+            forecastDiv.insertAdjacentHTML('beforeend', forecastHTML);
+        }
+    }
 }
 
 // Function to fetch weather data for a city
-async function fetchWeather(cityName) {
-    const apiKey = "d84a44f96fff68524d2248d02c76f4d8";
-    const apiUrl = `https://api.openweathermap.org/data/2.5/weather?q=${cityName}&appid=${apiKey}`;
-
-    try {
-        const response = await fetch(apiUrl);
-        const data = await response.json();
-        return data;
-    } catch (error) {
-        console.error("Error fetching weather data:", error);
-        return null;
-    }
-}
 async function fetchForecast(cityName) {
     const apiKey = "d84a44f96fff68524d2248d02c76f4d8";
     const apiUrl = `https://api.openweathermap.org/data/2.5/forecast?q=${cityName}&appid=${apiKey}`;
