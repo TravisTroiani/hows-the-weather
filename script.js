@@ -29,19 +29,19 @@ form.addEventListener('submit', async function(event) {
     try {
         const apiKey = "d84a44f96fff68524d2248d02c76f4d8";
         const currentWeatherUrl = `https://api.openweathermap.org/data/2.5/weather?q=${cityName}&appid=${apiKey}`;
-        // const forecastUrl = `https://api.openweathermap.org/data/2.5/forecast?q=${cityName}&appid=${apiKey}`;
+        const forecastUrl = `https://api.openweathermap.org/data/2.5/forecast?q=${cityName}&appid=${apiKey}`;
         
         const currentWeatherResponse = await fetch(currentWeatherUrl);
-        // const forecastResponse = await fetch(forecastUrl);
+        const forecastResponse = await fetch(forecastUrl);
         
         if (!currentWeatherResponse.ok || !forecastResponse.ok) {
             throw new Error('Weather data not available.');
         }
         
         const currentWeatherData = await currentWeatherResponse.json();
-        // const forecastData = await forecastResponse.json();
+        const forecastData = await forecastResponse.json();
         displayWeather(currentWeatherData);
-        // displayForecast(forecastData);
+        displayForecast(forecastData);
     } catch (error) {
         console.error(error);
         alert('Error fetching weather data.');
